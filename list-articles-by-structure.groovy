@@ -47,5 +47,5 @@ def List removeDuplicates(List articles) {
 }
 
 def String getArticleUrl(String articleId) {
-    return "/group/private-pv/~/control_panel/manage?p_p_id=com_liferay_journal_web_portlet_JournalPortlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_com_liferay_journal_web_portlet_JournalPortlet_mvcPath=%2Fedit_article.jsp&_com_liferay_journal_web_portlet_JournalPortlet_articleId=" + articleId
+    return "/group/guest/~/control_panel/manage?p_p_id=com_liferay_journal_web_portlet_JournalPortlet&_com_liferay_journal_web_portlet_JournalPortlet_mvcPath=/edit_article.jsp&_com_liferay_journal_web_portlet_JournalPortlet_articleId=" + articleId
 }
