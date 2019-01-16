@@ -1,3 +1,4 @@
+import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil
 import com.liferay.journal.service.JournalArticleLocalServiceUtil
 
@@ -25,7 +26,18 @@ oldStructures.each {
 }
 
 def List getOldStructures(List allStructures) {
-    allStructures.stream().filter { structure -> structure.getUserName().contains("Webmaster") }.collect()
+    oldStructures = []
+    allStructures.each { structure ->
+        List templates = DDMTemplateLocalServiceUtil.getTemplatesByClassPK(structure.getGroupId(), structure.getStructureId())
+
+        templates.each { template ->
+            if (template.getLanguage().equals("vm") && !oldStructures.contains(structure)) {
+                oldStructures.add(structure)
+            }
+        }
+    }
+    
+    return oldStructures
 }
 
 def List removeDuplicates(List articles) {
