@@ -7,7 +7,11 @@ List layouts = LayoutLocalServiceUtil.getLayouts(QueryUtil.ALL_POS, QueryUtil.AL
 layouts.stream().each { layout ->
 	layout.getLayoutType().getPortlets().stream().each { portlet ->
 		if (portlet.getPortletName().contains("PortletName")) {
-			println(PortalUtil.getLayoutFullURL(layout.getGroup().getGroupId(), portlet.getPortletId()))
+			println("${portlet.getPortletName()} - ${getUrlToLayout(layout)}")
 		}
 	}
+}
+
+def String getUrlToLayout(layout) {
+	return "<a href='${PortalUtil.getLayoutActualURL(layout)}'>${layout.getGroup().getFriendlyURL()}${layout.getFriendlyURL()}</a>"
 }
