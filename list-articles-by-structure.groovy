@@ -3,6 +3,8 @@ import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil
 import com.liferay.journal.model.JournalArticle
 import com.liferay.journal.service.JournalArticleLocalServiceUtil
 
+import static com.liferay.portal.kernel.template.TemplateConstants.LANG_TYPE_VM as vm
+
 final DUTCH_LOCALE = new Locale("nl_BE")
 
 allStructures = DDMStructureLocalServiceUtil.getStructures()
@@ -33,7 +35,7 @@ List getOldStructures(List allStructures) {
         List templates = DDMTemplateLocalServiceUtil.getTemplatesByClassPK(structure.getGroupId(), structure.getStructureId())
 
         templates.each { template ->
-            if (template.getLanguage().equals("vm") && !oldStructures.contains(structure)) {
+            if (template.getLanguage().equals(vm) && !oldStructures.contains(structure)) {
                 oldStructures.add(structure)
             }
         }
