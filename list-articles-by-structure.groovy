@@ -1,5 +1,6 @@
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLocalServiceUtil
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil
+import com.liferay.journal.model.JournalArticle
 import com.liferay.journal.service.JournalArticleLocalServiceUtil
 
 final DUTCH_LOCALE = new Locale("nl_BE")
@@ -15,18 +16,19 @@ oldStructures.each {
 
     removeDuplicates(articles)
 
-    out.println(structureKey + " - " + it.getName() + " (size: " + articles.size() + ")")
+    println("${structureKey} - ${it.getName()} (size: ${articles.size()})")
 
     articles.each {
         article = JournalArticleLocalServiceUtil.getLatestArticle(it.getResourcePrimKey())
         articleId = article.getArticleId()
-        out.println("\t* " + article.getTitle(DUTCH_LOCALE) + " (id: <a href='" + getArticleUrl(articleId) + "'>" + articleId + "</a>) ")
+        println("\t* ${article.getTitle(DUTCH_LOCALE)} (id: <a href='${getArticleUrl(article)}'>${articleId}</a>)")
     }
-    out.println()
+    println()
 }
 
-def List getOldStructures(List allStructures) {
+List getOldStructures(List allStructures) {
     oldStructures = []
+
     allStructures.each { structure ->
         List templates = DDMTemplateLocalServiceUtil.getTemplatesByClassPK(structure.getGroupId(), structure.getStructureId())
 
@@ -40,12 +42,17 @@ def List getOldStructures(List allStructures) {
     return oldStructures
 }
 
-def List removeDuplicates(List articles) {
+List removeDuplicates(List articles) {
     Set uniqueArticles = []
 
     articles.removeIf { !uniqueArticles.add(it.getArticleId()) }.collect { }
 }
 
-def String getArticleUrl(String articleId) {
-    return "/group/guest/~/control_panel/manage?p_p_id=com_liferay_journal_web_portlet_JournalPortlet&_com_liferay_journal_web_portlet_JournalPortlet_mvcPath=/edit_article.jsp&_com_liferay_journal_web_portlet_JournalPortlet_articleId=" + articleId
+String getArticleUrl(JournalArticle article) {
+    return """/group/guest/~/control_panel/manage?p_p_id=com_liferay_journal_web_portlet_JournalPortlet\
+&_com_liferay_journal_web_portlet_JournalPortlet_mvcPath=/edit_article.jsp\
+&_com_liferay_journal_web_portlet_JournalPortlet_groupId=${article.getGroupId()}\
+&_com_liferay_journal_web_portlet_JournalPortlet_folderId=${article.getFolderId()}\
+&_com_liferay_journal_web_portlet_JournalPortlet_articleId=${article.getArticleId()}\
+&_com_liferay_journal_web_portlet_JournalPortlet_version=${article.getVersion()}"""
 }
