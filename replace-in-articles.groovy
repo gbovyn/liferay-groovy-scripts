@@ -27,7 +27,13 @@ latestArticles.stream()
 	}.each { article ->	
 		println("Updating ${article.content.count(PATTERN)} occurrences in article ${getArticleHref(article)} ${previewMode ? '(preview)' : ''}")
 
-		if (!previewMode) {
+		if (previewMode) {
+			def matches = article.content =~ /(?s)(?:.{$CONTEXT_SIZE})?(?:$PATTERN)(?:.{$CONTEXT_SIZE})?/
+			matches.each { match ->
+				println("Before: <pre><xmp>${match}</xmp></pre>")
+				println("After: <pre><xmp>${match.replaceAll(PATTERN, NEW_VALUE)}</xmp></pre>")
+			}
+		} else {
 			article.with {
 				LOGGER.info("Updating article ${articleId}")
 
@@ -35,12 +41,6 @@ latestArticles.stream()
 					groupId, articleId,
 					version, content.replaceAll(PATTERN, NEW_VALUE)
 				)
-			}
-		} else {
-			def matches = article.content =~ /(?s)(?:.{$CONTEXT_SIZE})?(?:$PATTERN)(?:.{$CONTEXT_SIZE})?/
-			matches.each { match ->
-				println("Before: <pre><xmp>${match}</xmp></pre>")
-				println("After: <pre><xmp>${match.replaceAll(PATTERN, NEW_VALUE)}</xmp></pre>")
 			}
 		}
 	}
