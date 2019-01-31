@@ -3,8 +3,6 @@ import static javax.portlet.PortletRequest.RENDER_PHASE
 import static com.liferay.journal.constants.JournalPortletKeys.JOURNAL
 import com.liferay.journal.model.JournalArticle
 import com.liferay.journal.service.JournalArticleLocalServiceUtil
-import com.liferay.portal.kernel.util.PortalUtil
-import com.liferay.portal.kernel.util.WebKeys
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil
 
 import org.slf4j.LoggerFactory
@@ -54,9 +52,8 @@ String getArticleHref(JournalArticle article) {
 }
 
 String getArticleUrl(JournalArticle article) {
-	def themeDisplay = actionRequest.getAttribute(WebKeys.THEME_DISPLAY)
+	def url = PortletURLFactoryUtil.create(actionRequest, JOURNAL, RENDER_PHASE)
 
-	def url = PortletURLFactoryUtil.create(actionRequest, JOURNAL, themeDisplay.controlPanelLayout.plid, RENDER_PHASE)
 	url.setParameter('mvcPath', '/edit_article.jsp')
 
 	def fields = ['groupId', 'folderId', 'articleId', 'version']
