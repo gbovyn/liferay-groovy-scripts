@@ -1,10 +1,15 @@
+import static javax.portlet.PortletRequest.RENDER_PHASE
+
+import static com.liferay.journal.constants.JournalPortletKeys.JOURNAL
 import com.liferay.journal.model.JournalArticle
 import com.liferay.journal.service.JournalArticleLocalServiceUtil
 import com.liferay.portal.kernel.util.PortalUtil
+import com.liferay.portal.kernel.util.WebKeys
+import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil
 
 import org.slf4j.LoggerFactory
 
-LOGGER = LoggerFactory.getLogger("${this.getClass().getName()} - Replace in articles")
+LOGGER = LoggerFactory.getLogger("${getClass().name} - Replace in articles")
 
 previewMode = true
 
@@ -16,7 +21,7 @@ CONTEXT_SIZE = 30
 
 List articles = JournalArticleLocalServiceUtil.getArticles(GROUP_ID)
 
-Set latestArticles = articles.collect { JournalArticleLocalServiceUtil.getLatestArticle(it.getResourcePrimKey()) } as Set
+Set latestArticles = articles.collect { JournalArticleLocalServiceUtil.getLatestArticle(it.resourcePrimKey) }
 
 latestArticles.stream()
 	.filter { article ->
@@ -49,10 +54,15 @@ String getArticleHref(JournalArticle article) {
 }
 
 String getArticleUrl(JournalArticle article) {
-    return """/group/guest/~/control_panel/manage?p_p_id=com_liferay_journal_web_portlet_JournalPortlet\
-&_com_liferay_journal_web_portlet_JournalPortlet_mvcPath=/edit_article.jsp\
-&_com_liferay_journal_web_portlet_JournalPortlet_groupId=${article.groupId}\
-&_com_liferay_journal_web_portlet_JournalPortlet_folderId=${article.folderId}\
-&_com_liferay_journal_web_portlet_JournalPortlet_articleId=${article.articleId}\
-&_com_liferay_journal_web_portlet_JournalPortlet_version=${article.version}"""
+	def themeDisplay = actionRequest.getAttribute(WebKeys.THEME_DISPLAY)
+
+	def url = PortletURLFactoryUtil.create(actionRequest, JOURNAL, themeDisplay.controlPanelLayout.plid, RENDER_PHASE)
+	url.setParameter('mvcPath', '/edit_article.jsp')
+
+	def fields = ['groupId', 'folderId', 'articleId', 'version']
+	fields.each { field ->
+		url.setParameter("${field}", "${article."${field}"}")
+	}
+
+	return url
 }
