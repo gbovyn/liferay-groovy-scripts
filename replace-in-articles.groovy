@@ -21,20 +21,20 @@ Set latestArticles = articles.collect { JournalArticleLocalServiceUtil.getLatest
 latestArticles.stream()
 	.filter { article ->
 		article.content.contains(PATTERN)
-	}.each { article ->
-		def content = article.content
-		
-		println("Updating ${content.count(PATTERN)} occurrences in article ${getArticleHref(article)} ${!previewMode ? '(preview)' : ''}")
+	}.each { article ->	
+		println("Updating ${article.content.count(PATTERN)} occurrences in article ${getArticleHref(article)} ${previewMode ? '(preview)' : ''}")
 
 		if (!previewMode) {
-			LOGGER.info("Updating article ${article.articleId}")
+			article.with {
+				LOGGER.info("Updating article ${articleId}")
 
-			JournalArticleLocalServiceUtil.updateContent(
-				article.groupId, article.articleId,
-				article.version, content.replaceAll(PATTERN, NEW_VALUE)
-			)
+				JournalArticleLocalServiceUtil.updateContent(
+					groupId, articleId,
+					version, content.replaceAll(PATTERN, NEW_VALUE)
+				)
+			}
 		} else {
-			def matches = content =~ /(?s)(?:.{$CONTEXT_SIZE})?(?:$PATTERN)(?:.{$CONTEXT_SIZE})?/
+			def matches = article.content =~ /(?s)(?:.{$CONTEXT_SIZE})?(?:$PATTERN)(?:.{$CONTEXT_SIZE})?/
 			matches.each { match ->
 				println("Before: <pre><xmp>${match}</xmp></pre>")
 				println("After: <pre><xmp>${match.replaceAll(PATTERN, NEW_VALUE)}</xmp></pre>")
